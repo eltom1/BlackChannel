@@ -22,12 +22,12 @@ func main() {
 
 	if rol == "host" {
 		fmt.Println("Hola, soy el HOST, espero q se conecte algun alma.")
-		listener, err := net.Listen("tcp", ":8080") //escucha el puerto 8080
+		listener, err := net.Listen("tcp", ":8081") //escucha el puerto 8080
 		if err != nil {
 			fmt.Println("Error al abrir el puerto:", err) //si hay errpr lo imprime
 			return
 		}
-		fmt.Println("Puerto 8080 abierto, Esperando...")
+		fmt.Println("Puerto 8081 abierto, Esperando...")
 
 		conn, err := listener.Accept()
 		if err != nil {
@@ -36,11 +36,13 @@ func main() {
 		}
 		fmt.Println("Alguien se conecto")
 
+		conn.Write([]byte("se conecto el host \n"))
+
 		conn.Close() // se cierra la conexion
 
 	} else if rol == "guest" {
 		// se conecta al host
-		conn, err := net.Dial("tcp", "localhost:8080")
+		conn, err := net.Dial("tcp", "localhost:8081")
 		if err != nil {
 			fmt.Println("Error al conectar con el host:", err) // en caso de no poder conectarse
 			return
