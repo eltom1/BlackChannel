@@ -1,17 +1,32 @@
 package main
 
-import( 
-	"fmt" // para imprimir en consola 
-	//"os"  // acceder a entrada del sistema 
+// print  -> printea literal
+// printf -> printea con formato
+
+// el compilador de go es retrolazo q rompe las bolas si importas cosas q no usas
+
+import (
+	"fmt" // sirve para imprimir en consola
+	"os"  // sirve para interactuar con el sistema operativo
+	//"net"
 )
 
-func main(){
-	mensaje := ""
+func main() {
+	//chekeo
+	if len(os.Args) < 2 {
+		fmt.Println("Error: escribe host o guest ")
+		return
+	}
+	// rol: elegir entre host o guest
+	rol := os.Args[1]
 
-	fmt.Print("Escribe tu mensaje: ")
+	if rol == "host" {
+		fmt.Println("Hola, soy el HOST,espero q se conecte algun alma.")
 
-	fmt.Scanln(&mensaje)
+	} else if rol == "guest" {
+		fmt.Println("Hola, soy el GUEST. Voy a intentar llamar al host.")
 
-	fmt.Printf("Mensaje capturado %s\n", mensaje)
-
+	} else {
+		fmt.Println("Rol incorrecto es o HOST o GUEST")
+	}
 }
