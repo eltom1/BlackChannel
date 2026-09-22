@@ -7,27 +7,45 @@ package main
 
 import (
 	"fmt" // sirve para imprimir en consola
-	"net"
-	"os" // sirve para interactuar con el sistema operativo
+	"net" //sirve para crear conexiones de red
+	// sirve para interactuar con el sistema operativo
 )
 
+//os.Args[0] -> nombre del programa
+//os.Args[1] -> parametro para el host o guest
+//os.Args[2] -> parametro para el puerto
+
 func main() {
-	//chekeo
-	if len(os.Args) < 2 {
-		fmt.Println("Error: escribe host o guest ")
-		return
-	}
+	//chekeo si no tiene menos de dos parametros tira error
+
+	/*
+		if len(os.Args) < 2 {
+			fmt.Println("Error: escribe host o guest ")
+			return
+		}
+	*/
+
+	tipo := ""
+	puerto := ""
+
+	fmt.Print("ingrese el puerto: ")
+	fmt.Scanln(&puerto)
+
+	fmt.Print("ingrese el tipo de usuario(host o guest): ")
+	fmt.Scanln(&tipo)
+
 	// rol: elegir entre host o guest
-	rol := os.Args[1]
+	rol := tipo
 
 	if rol == "host" {
 		fmt.Println("Hola, soy el HOST, espero q se conecte algun alma.")
-		listener, err := net.Listen("tcp", ":8081") //escucha el puerto 8080
+		listener, err := net.Listen("tcp", ":"+puerto) //escucha el puerto 8080
+
 		if err != nil {
 			fmt.Println("Error al abrir el puerto:", err) //si hay errpr lo imprime
 			return
 		}
-		fmt.Println("Puerto 8081 abierto, Esperando...")
+		fmt.Println("Puerto ", puerto, " abierto, Esperando...")
 
 		conn, err := listener.Accept()
 		if err != nil {
@@ -41,8 +59,9 @@ func main() {
 		conn.Close() // se cierra la conexion
 
 	} else if rol == "guest" {
+
 		// se conecta al host
-		conn, err := net.Dial("tcp", "localhost:8081")
+		conn, err := net.Dial("tcp", "localhost:"+puerto)
 		if err != nil {
 			fmt.Println("Error al conectar con el host:", err) // en caso de no poder conectarse
 			return
