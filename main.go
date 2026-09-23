@@ -7,8 +7,10 @@ package main
 
 import (
 	"fmt" // sirve para imprimir en consola
-	"net" //sirve para crear conexiones de red
-	// sirve para interactuar con el sistema operativo
+	"net" //sirve para crear conexioncondicion := truees de red
+	//"os" sirve para interactuar con el sistema operativo
+	//"os/signal" // sirve para manejar senales del sistema operativo
+	//"syscall"  // sirve para capturar senales del sistema
 )
 
 //os.Args[0] -> nombre del programa
@@ -16,13 +18,13 @@ import (
 //os.Args[2] -> parametro para el puerto
 
 func main() {
+	//checkeo primera version
 	//chekeo si no tiene menos de dos parametros tira error
-
 	/*
-		if len(os.Args) < 2 {
-			fmt.Println("Error: escribe host o guest ")
-			return
-		}
+	   if len(os.Args) < 2 {
+	       fmt.Println("Error: escribe host o guest ")
+	       return
+	   }
 	*/
 
 	tipo := ""
@@ -38,25 +40,28 @@ func main() {
 	rol := tipo
 
 	if rol == "host" {
-		fmt.Println("Hola, soy el HOST, espero q se conecte algun alma.")
-		listener, err := net.Listen("tcp", ":"+puerto) //escucha el puerto 8080
 
+		fmt.Println("conectado como host")
+
+		listener, err := net.Listen("tcp", ":"+puerto) //escucha el puerto
+		conn, err := listener.Accept()                 //acepta la conexion
 		if err != nil {
-			fmt.Println("Error al abrir el puerto:", err) //si hay errpr lo imprime
+			fmt.Println("Error al aceptar la conexion:", err) //si hay error lo imprime
 			return
 		}
-		fmt.Println("Puerto ", puerto, " abierto, Esperando...")
+		fmt.Println("Ya esta conectado")
 
-		conn, err := listener.Accept()
-		if err != nil {
-			fmt.Println("Error al aceptar conexion:", err)
-			return
+		for {
+			var mensaje string
+			fmt.Print("escribi un msj...")
+			fmt.Scanln(&mensaje)
+
+			if mensaje == "exit" {
+				break
+			} //salir del buble
+			conn.Write([]byte(mensaje + "\n"))
 		}
-		fmt.Println("Alguien se conecto")
-
-		conn.Write([]byte("se conecto el host \n"))
-
-		conn.Close() // se cierra la conexion
+		conn.Close() //termina la conexion
 
 	} else if rol == "guest" {
 
@@ -66,20 +71,29 @@ func main() {
 			fmt.Println("Error al conectar con el host:", err) // en caso de no poder conectarse
 			return
 		}
+
 		fmt.Println("¡Conexion exitosaa :0 ")
 
-		// se lee la respuesta del host
-		buffer := make([]byte, 1024)
-		n, err := conn.Read(buffer)
-		if err != nil {
-			fmt.Println("Error al leer el mensaje:", err)
-			return
-		}
-		// se imprime la respuesta del host
-		fmt.Printf("El host dice: %s\n", string(buffer[:n]))
-		conn.Close() //cierra la conexion
+		for {
+			buffer := make([]byte, 1024)
+			n, err := conn.Read(buffer)
+			if err != nil {
+				fmt.Println("Error al leer el mensaje:", err)
+				break
+			}
+			fmt.Print("el host dice: ", string(buffer[:n])) //imprime el mensaje del host
 
+			var mensaje string
+			fmt.Print("escribi un msj...")
+			fmt.Scanln(&mensaje)
+
+			if mensaje == "exit" { //salir del buble
+				break
+			}
+			conn.Write([]byte(mensaje + "\n"))
+		}
+		conn.Close() //termina la conexion
 	} else {
-		fmt.Println("Rol incorrecto es o HOST o GUEST")
+		fmt.Println("el rol es host o guest")
 	}
 }
