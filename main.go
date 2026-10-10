@@ -4,10 +4,17 @@ package main
 // printf -> printea con formato
 
 // el compilador de go es retrolazo q rompe las bolas si importas cosas q no usas
-
 import (
+	"bufio" // sirve para leer y escribir en el buffer
+	"os"
+
+	//            bufio.NewReader o bufio.NewScanner
+
 	"fmt" // sirve para imprimir en consola
+
 	"net" //sirve para crear conexioncondicion := truees de red
+
+	"strings" // sirve para limpiar consola y manipular strings
 	//"os" sirve para interactuar con el sistema operativo
 	//"os/signal" // sirve para manejar senales del sistema operativo
 	//"syscall"  // sirve para capturar senales del sistema
@@ -16,6 +23,25 @@ import (
 //os.Args[0] -> nombre del programa
 //os.Args[1] -> parametro para el host o guest
 //os.Args[2] -> parametro para el puerto
+
+// el scanln rompe el flujo conversacional
+//porque sirve para palabras o nros unicamente
+
+func crearInput(texto string) string {
+	fmt.Print(texto)
+
+	//var para leer creando el buffer y vinculandolo al teclado
+	lector := bufio.NewReader(os.Stdin) //os.Stdin -> entrada estandar del sistema operativo
+
+	// la lectura hasta q encuentre un salto de linea
+	input, err := lector.ReadString('\n') //lee hasta q encuentre un salto de linea
+	if err != nil {
+		fmt.Println("Error al leer el input:", err) // if para detectar caso de error en lectura de teclado
+		return ""
+
+	}
+	return strings.TrimSpace(input)
+}
 
 func main() {
 
@@ -29,14 +55,8 @@ func main() {
 	   }
 	*/
 
-	tipo := ""
-	puerto := ""
-
-	fmt.Print("ingrese el puerto: ")
-	fmt.Scanln(&puerto)
-
-	fmt.Print("ingrese el tipo de usuario(host o guest): ")
-	fmt.Scanln(&tipo)
+	tipo := crearInput("ingrese el tipo: host o guest:  ")
+	puerto := crearInput("ingrese el puerto:  ")
 
 	// rol: elegir entre host o guest
 	rol := tipo
@@ -54,9 +74,7 @@ func main() {
 		fmt.Println("conexion exitosa con el guest")
 
 		for {
-			var mensaje string
-			fmt.Print("escribi un msj...")
-			fmt.Scanln(&mensaje)
+			mensaje := crearInput("escribi un msj... ") //nueva funcion implementada
 
 			if mensaje == "exit" {
 				break
@@ -86,8 +104,7 @@ func main() {
 			fmt.Print("el host dice: ", string(buffer[:n])) //imprime el mensaje del host
 
 			var mensaje string
-			fmt.Print("el guest dice: ")
-			fmt.Scanln(&mensaje)
+			crearInput("el guest dice: ")
 
 			if mensaje == "exit" { //salir del buble
 				break
