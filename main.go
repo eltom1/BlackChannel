@@ -18,6 +18,8 @@ import (
 //os.Args[2] -> parametro para el puerto
 
 func main() {
+
+	fmt.Println("== BLACK CHANNEL ==")
 	//checkeo primera version
 	//chekeo si no tiene menos de dos parametros tira error
 	/*
@@ -49,7 +51,7 @@ func main() {
 			fmt.Println("Error al aceptar la conexion:", err) //si hay error lo imprime
 			return
 		}
-		fmt.Println("Ya esta conectado")
+		fmt.Println("conexion exitosa con el guest")
 
 		for {
 			var mensaje string
@@ -84,7 +86,7 @@ func main() {
 			fmt.Print("el host dice: ", string(buffer[:n])) //imprime el mensaje del host
 
 			var mensaje string
-			fmt.Print("escribi un msj...")
+			fmt.Print("el guest dice: ")
 			fmt.Scanln(&mensaje)
 
 			if mensaje == "exit" { //salir del buble
