@@ -46,6 +46,7 @@ func crearInput(texto string) string {
 func main() {
 
 	fmt.Println("== BLACK CHANNEL ==")
+
 	//checkeo primera version
 	//chekeo si no tiene menos de dos parametros tira error
 	/*
@@ -72,6 +73,20 @@ func main() {
 			return
 		}
 		fmt.Println("conexion exitosa con el guest")
+
+		//go routine para poder leer los msj del guest xd
+
+		go func() {
+			for {
+				buffer := make([]byte, 1024) //crea un buffer de 1024 bytes
+				n, err := conn.Read(buffer)  //lee el buffer
+				if err != nil {
+					fmt.Println("Error al leer el mensaje:", err) //si hay error lo imprime
+					os.Exit(0)                                    //sale del programa
+				}
+				fmt.Print("el guest dice: ", string(buffer[:n])) //imprime el mensaje del guest
+			}
+		}()
 
 		for {
 			mensaje := crearInput("escribi un msj... ") //nueva funcion implementada
@@ -103,8 +118,7 @@ func main() {
 			}
 			fmt.Print("el host dice: ", string(buffer[:n])) //imprime el mensaje del host
 
-			var mensaje string
-			crearInput("el guest dice: ")
+			mensaje := crearInput("el guest dice: ")
 
 			if mensaje == "exit" { //salir del buble
 				break
