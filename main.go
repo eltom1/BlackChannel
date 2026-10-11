@@ -75,7 +75,6 @@ func main() {
 		fmt.Println("conexion exitosa con el guest")
 
 		//go routine para poder leer los msj del guest xd
-
 		go func() {
 			for {
 				buffer := make([]byte, 1024) //crea un buffer de 1024 bytes
@@ -109,15 +108,19 @@ func main() {
 
 		fmt.Println("¡Conexion exitosaa :0 ")
 
-		for {
-			buffer := make([]byte, 1024)
-			n, err := conn.Read(buffer)
-			if err != nil {
-				fmt.Println("Error al leer el mensaje:", err)
-				break
+		go func() {
+			for {
+				buffer := make([]byte, 1024)
+				n, err := conn.Read(buffer)
+				if err != nil {
+					fmt.Println("Error al leer el mensaje:", err)
+					os.Exit(0)
+				}
+				fmt.Print("el host dice: ", string(buffer[:n])) //imprime el mensaje del host
 			}
-			fmt.Print("el host dice: ", string(buffer[:n])) //imprime el mensaje del host
+		}()
 
+		for {
 			mensaje := crearInput("el guest dice: ")
 
 			if mensaje == "exit" { //salir del buble
