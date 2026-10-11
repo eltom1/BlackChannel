@@ -3,21 +3,17 @@ package main
 // print  -> printea literal
 // printf -> printea con formato
 
-// el compilador de go es retrolazo q rompe las bolas si importas cosas q no usas
+// el compilador de go es RETRO y rompe las bolas si importas cosas q no usas
 import (
 	"bufio" // sirve para leer y escribir en el buffer
-	"os"
-
-	//            bufio.NewReader o bufio.NewScanner
+	//        bufio.NewReader o bufio.NewScanner
 
 	"fmt" // sirve para imprimir en consola
+	"os"  // sirve para interactuar con el sistema operativo
 
 	"net" //sirve para crear conexioncondicion := truees de red
 
 	"strings" // sirve para limpiar consola y manipular strings
-	//"os" sirve para interactuar con el sistema operativo
-	//"os/signal" // sirve para manejar senales del sistema operativo
-	//"syscall"  // sirve para capturar senales del sistema
 )
 
 //os.Args[0] -> nombre del programa
@@ -27,6 +23,8 @@ import (
 // el scanln rompe el flujo conversacional
 //porque sirve para palabras o nros unicamente
 
+// crearInput(string) -> string
+// crearInput: funcion que detecta la entrada hasta el salto de linea
 func crearInput(texto string) string {
 	fmt.Print(texto)
 
@@ -43,9 +41,18 @@ func crearInput(texto string) string {
 	return strings.TrimSpace(input)
 }
 
+func AutoHost() {
+
+}
+
+func AutoGuest() {
+
+}
+
+// funcion main orquestadora del prog
 func main() {
 
-	fmt.Println("== BLACK CHANNEL ==")
+	fmt.Println("==================BLACK CHANNEL ==================")
 
 	//checkeo primera version
 	//chekeo si no tiene menos de dos parametros tira error
@@ -62,6 +69,8 @@ func main() {
 	// rol: elegir entre host o guest
 	rol := tipo
 
+	nombre_user := crearInput("ingrese su nombre de Usuario: ")
+
 	if rol == "host" {
 
 		fmt.Println("conectado como host")
@@ -75,6 +84,7 @@ func main() {
 		fmt.Println("conexion exitosa con el guest")
 
 		//go routine para poder leer los msj del guest xd
+		// funciona como un carril paralelo para poder hacer dos cosas al mismo tiempo
 		go func() {
 			for {
 				buffer := make([]byte, 1024) //crea un buffer de 1024 bytes
@@ -83,17 +93,22 @@ func main() {
 					fmt.Println("Error al leer el mensaje:", err) //si hay error lo imprime
 					os.Exit(0)                                    //sale del programa
 				}
-				fmt.Print("el guest dice: ", string(buffer[:n])) //imprime el mensaje del guest
+
+				fmt.Print(string(buffer[:n])) //imprime el mensaje del guest
 			}
 		}()
 
 		for {
-			mensaje := crearInput("escribi un msj... ") //nueva funcion implementada
+
+			mensaje := crearInput("") //nueva funcion implementada
 
 			if mensaje == "exit" {
 				break
 			} //salir del buble
-			conn.Write([]byte(mensaje + "\n"))
+
+			full_mensaje := "[" + nombre_user + "]: " + mensaje
+
+			conn.Write([]byte(full_mensaje + "\n"))
 		}
 		conn.Close() //termina la conexion
 
@@ -106,8 +121,9 @@ func main() {
 			return
 		}
 
-		fmt.Println("¡Conexion exitosaa :0 ")
+		fmt.Println("¡Conexion exitosaa con el host")
 
+		//goroutine para el guest que lee los msj del host
 		go func() {
 			for {
 				buffer := make([]byte, 1024)
@@ -116,17 +132,21 @@ func main() {
 					fmt.Println("Error al leer el mensaje:", err)
 					os.Exit(0)
 				}
-				fmt.Print("el host dice: ", string(buffer[:n])) //imprime el mensaje del host
+				fmt.Print(string(buffer[:n])) //imprime el mensaje del host
 			}
 		}()
 
+		//el for ahora solo se encarga de enviar msj
 		for {
-			mensaje := crearInput("el guest dice: ")
+			mensaje := crearInput("")
 
 			if mensaje == "exit" { //salir del buble
 				break
 			}
-			conn.Write([]byte(mensaje + "\n"))
+
+			full_mensaje := "[" + nombre_user + "]: " + mensaje
+
+			conn.Write([]byte(full_mensaje + "\n"))
 		}
 		conn.Close() //termina la conexion
 	} else {
