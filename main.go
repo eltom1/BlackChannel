@@ -41,12 +41,91 @@ func crearInput(texto string) string {
 	return strings.TrimSpace(input)
 }
 
-func AutoHost() {
+// AutoHost: funcion que se encarga de crear el host automaticamente c
+func AutoHost(puerto string, nombre_user string) {
 
+	fmt.Println("Designado Como Host")
+	listener, err := net.Listen("tcp", ":"+puerto) //se pone a la escucha del puerto
+	if err != nil {
+		fmt.Println("Error en la escucha del puerto", err) //si hay error lo imprime
+		return
+	}
+	conn, err := listener.Accept() //acepta la conexion
+	if err != nil {
+		fmt.Println("Error al aceptar la conexion:", err) //si hay error lo imprime
+		return
+	}
+	fmt.Println("emparejado con el guest")
+
+	//go routine para poder leer los msj del guest xd
+	// funciona como un carril paralelo para poder hacer dos cosas al mismo tiempo
+	go func() {
+		for {
+			buffer := make([]byte, 1024) //crea un buffer de 1024 bytes
+			n, err := conn.Read(buffer)  //lee el buffer
+			if err != nil {
+				fmt.Println("Error al leer el mensaje:", err) //si hay error lo imprime
+				os.Exit(0)                                    //sale del programa
+			}
+
+			fmt.Print(string(buffer[:n])) //imprime el mensaje del guest
+		}
+	}()
+
+	//bucle para enviar mensajes
+	for {
+
+		mensaje := crearInput("") //nueva funcion implementada
+
+		if mensaje == "exit" {
+			break
+		} //salir del buble
+
+		full_mensaje := "[" + nombre_user + "]: " + mensaje
+
+		conn.Write([]byte(full_mensaje + "\n"))
+	}
+	conn.Close() //termina la conexion
 }
 
-func AutoGuest() {
+// AutoGuest: funcion q desig na el rol de guest automaticamente
+func AutoGuest(puerto string, nombre_user string) {
+	fmt.Println("Designado Como Guest")
+	// se conecta al host
+	conn, err := net.Dial("tcp", "localhost:"+puerto)
+	if err != nil {
+		fmt.Println("Error al conectar con el host:", err) // en caso de no poder conectarse
+		return
+	}
 
+	fmt.Println("¡Conexion exitosaa con el host")
+
+	//goroutine para el guest que lee los msj del host
+	go func() {
+		for {
+			buffer := make([]byte, 1024)
+			n, err := conn.Read(buffer)
+			if err != nil {
+				fmt.Println("Error al leer el mensaje:", err)
+				os.Exit(0)
+			}
+			fmt.Print(string(buffer[:n])) //imprime el mensaje del host
+		}
+	}()
+
+	//el for ahora solo se encarga de enviar msj
+	for {
+		mensaje := crearInput("")
+
+		if mensaje == "exit" { //salir del buble
+			break
+		}
+
+		full_mensaje := "[" + nombre_user + "]: " + mensaje
+
+		conn.Write([]byte(full_mensaje + "\n"))
+	}
+	conn.Close() //termina la conexion
 }
 
 // funcion main orquestadora del prog
@@ -54,102 +133,17 @@ func main() {
 
 	fmt.Println("==================BLACK CHANNEL ==================")
 
-	//checkeo primera version
-	//chekeo si no tiene menos de dos parametros tira error
-	/*
-	   if len(os.Args) < 2 {
-	       fmt.Println("Error: escribe host o guest ")
-	       return
-	   }
-	*/
+	//tipo := crearInput("ingrese el tipo: host o guest:  ") ya no es necesario
 
-	tipo := crearInput("ingrese el tipo: host o guest:  ")
 	puerto := crearInput("ingrese el puerto:  ")
-
-	// rol: elegir entre host o guest
-	rol := tipo
 
 	nombre_user := crearInput("ingrese su nombre de Usuario: ")
 
-	if rol == "host" {
-
-		fmt.Println("conectado como host")
-
-		listener, err := net.Listen("tcp", ":"+puerto) //escucha el puerto
-		conn, err := listener.Accept()                 //acepta la conexion
-		if err != nil {
-			fmt.Println("Error al aceptar la conexion:", err) //si hay error lo imprime
-			return
-		}
-		fmt.Println("conexion exitosa con el guest")
-
-		//go routine para poder leer los msj del guest xd
-		// funciona como un carril paralelo para poder hacer dos cosas al mismo tiempo
-		go func() {
-			for {
-				buffer := make([]byte, 1024) //crea un buffer de 1024 bytes
-				n, err := conn.Read(buffer)  //lee el buffer
-				if err != nil {
-					fmt.Println("Error al leer el mensaje:", err) //si hay error lo imprime
-					os.Exit(0)                                    //sale del programa
-				}
-
-				fmt.Print(string(buffer[:n])) //imprime el mensaje del guest
-			}
-		}()
-
-		for {
-
-			mensaje := crearInput("") //nueva funcion implementada
-
-			if mensaje == "exit" {
-				break
-			} //salir del buble
-
-			full_mensaje := "[" + nombre_user + "]: " + mensaje
-
-			conn.Write([]byte(full_mensaje + "\n"))
-		}
-		conn.Close() //termina la conexion
-
-	} else if rol == "guest" {
-
-		// se conecta al host
-		conn, err := net.Dial("tcp", "localhost:"+puerto)
-		if err != nil {
-			fmt.Println("Error al conectar con el host:", err) // en caso de no poder conectarse
-			return
-		}
-
-		fmt.Println("¡Conexion exitosaa con el host")
-
-		//goroutine para el guest que lee los msj del host
-		go func() {
-			for {
-				buffer := make([]byte, 1024)
-				n, err := conn.Read(buffer)
-				if err != nil {
-					fmt.Println("Error al leer el mensaje:", err)
-					os.Exit(0)
-				}
-				fmt.Print(string(buffer[:n])) //imprime el mensaje del host
-			}
-		}()
-
-		//el for ahora solo se encarga de enviar msj
-		for {
-			mensaje := crearInput("")
-
-			if mensaje == "exit" { //salir del buble
-				break
-			}
-
-			full_mensaje := "[" + nombre_user + "]: " + mensaje
-
-			conn.Write([]byte(full_mensaje + "\n"))
-		}
-		conn.Close() //termina la conexion
+	listener, err := net.Listen("tcp", ":"+puerto) //se pone a la escucha del puerto
+	if err == nil {
+		listener.Close() //designa host si no hay errore
+		AutoHost(puerto, nombre_user)
 	} else {
-		fmt.Println("el rol es host o guest")
+		AutoGuest(puerto, nombre_user) //sino se designa guest
 	}
 }
