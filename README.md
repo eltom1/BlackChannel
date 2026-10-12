@@ -13,13 +13,13 @@ y como guest:
 
 
 =========================================
-cosas a implementar
- 
--parametro para elegir puerto  [x]
-- eliminar la eleccion de host o guest y que se detecte si hay alguien escuchando 
-     y si no hay nadie te convertis en host []
--eleccion de contrasena segura dsp de ingresar puerto []
+cosas a implementar---
+
+-   parametro para elegir puerto  [x]
+-   eliminar la eleccion de host o guest y que se detecte si hay alguien escuchando 
+    y si no hay nadie te convertis en host [x]
+-   eleccion de contrasena segura dsp de ingresar puerto []
     (los dos usuarios deberan tener la misma contrasena para poder iniciar la comunicacion)
--interfaz fachera con lipgloss y bubletea []  
--menu para poder elegir todo []
--hacerlo seguro []
+-   interfaz fachera con lipgloss y bubletea []  
+-   menu para poder elegir todo []
+-   hacerlo seguro []
