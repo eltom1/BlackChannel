@@ -86,7 +86,7 @@ func AutoHost(puerto string, nombre_user string) {
 		hora := time.Now()                    //para obtener la hora exacta de envio
 		hora_de_envio := hora.Format("15:04") //formato de hora
 
-		full_mensaje := "[" + nombre_user + "]: " + mensaje  "\t\t\t" + "[" + hora_de_envio + "]" //formato del mensaje
+		full_mensaje := "[" + nombre_user + "]: " + mensaje + "\t\t\t\t" + "[" + hora_de_envio + "] "
 		conn.Write([]byte(full_mensaje + "\n"))
 	}
 	conn.Close() //termina la conexion
@@ -125,9 +125,10 @@ func AutoGuest(puerto string, nombre_user string) {
 			break
 		}
 
-		hora_de_envio := time.Now() //para obtener la hora exacta de envio
+		hora := time.Now()                    //para obtener la hora exacta de envio
+		hora_de_envio := hora.Format("15:04") //formato de hora
 
-		full_mensaje := "[" + hora_de_envio.Format("15:04") + "] [" + nombre_user + "]: " + mensaje
+		full_mensaje := "[" + nombre_user + "]: " + mensaje + "\t\t\t\t" + "[" + hora_de_envio + "] "
 		conn.Write([]byte(full_mensaje + "\n"))
 	}
 	conn.Close() //termina la conexion
