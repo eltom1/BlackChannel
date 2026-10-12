@@ -77,7 +77,7 @@ func AutoHost(puerto string, nombre_user string) {
 	//bucle para enviar mensajes
 	for {
 
-		mensaje := crearInput("") //nueva funcion implementada
+		mensaje := crearInput("[" + nombre_user + "]: ") //nueva funcion implementada
 
 		if mensaje == "exit" {
 			break
@@ -86,7 +86,10 @@ func AutoHost(puerto string, nombre_user string) {
 		hora := time.Now()                    //para obtener la hora exacta de envio
 		hora_de_envio := hora.Format("15:04") //formato de hora
 
+		fmt.Print("\t\t\t[" + hora_de_envio + "]\n")
+
 		full_mensaje := "[" + nombre_user + "]: " + mensaje + "\t\t\t\t" + "[" + hora_de_envio + "] "
+		//fmt.Print(full_mensaje + "\n")
 		conn.Write([]byte(full_mensaje + "\n"))
 	}
 	conn.Close() //termina la conexion
@@ -119,7 +122,7 @@ func AutoGuest(puerto string, nombre_user string) {
 
 	//el for ahora solo se encarga de enviar msj
 	for {
-		mensaje := crearInput("")
+		mensaje := crearInput("[" + nombre_user + "]: ")   <--- este
 
 		if mensaje == "exit" { //salir del buble
 			break
@@ -128,8 +131,11 @@ func AutoGuest(puerto string, nombre_user string) {
 		hora := time.Now()                    //para obtener la hora exacta de envio
 		hora_de_envio := hora.Format("15:04") //formato de hora
 
+		fmt.Print("[" + hora_de_envio + "]\n")    este   <---
+
+
 		full_mensaje := "[" + nombre_user + "]: " + mensaje + "\t\t\t\t" + "[" + hora_de_envio + "] "
-		conn.Write([]byte(full_mensaje + "\n"))
+		conn.Write([]byte(full_mensaje + "\n")) //envia el msj al host
 	}
 	conn.Close() //termina la conexion
 }
