@@ -5,6 +5,8 @@ package main
 
 // el compilador de go es RETRO y rompe las bolas si importas cosas q no usas
 import (
+	"time" // para registrar el tiempo de los msj
+
 	"bufio" // sirve para leer y escribir en el buffer
 	//        bufio.NewReader o bufio.NewScanner
 
@@ -81,8 +83,10 @@ func AutoHost(puerto string, nombre_user string) {
 			break
 		} //salir del buble
 
-		full_mensaje := "[" + nombre_user + "]: " + mensaje
+		hora := time.Now()                    //para obtener la hora exacta de envio
+		hora_de_envio := hora.Format("15:04") //formato de hora
 
+		full_mensaje := "[" + nombre_user + "]: " + mensaje  "\t\t\t" + "[" + hora_de_envio + "]" //formato del mensaje
 		conn.Write([]byte(full_mensaje + "\n"))
 	}
 	conn.Close() //termina la conexion
@@ -121,8 +125,9 @@ func AutoGuest(puerto string, nombre_user string) {
 			break
 		}
 
-		full_mensaje := "[" + nombre_user + "]: " + mensaje
+		hora_de_envio := time.Now() //para obtener la hora exacta de envio
 
+		full_mensaje := "[" + hora_de_envio.Format("15:04") + "] [" + nombre_user + "]: " + mensaje
 		conn.Write([]byte(full_mensaje + "\n"))
 	}
 	conn.Close() //termina la conexion
